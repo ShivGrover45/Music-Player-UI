@@ -27,11 +27,10 @@ sealed class Screen(val title:String,val route:String) {
             "add",
             R.drawable.baseline_person_add_alt_24
         )
-
-        val screensInDrawer = listOf(
+    }
+}
+val screensInDrawer = listOf(
             Screen.DrawerScreen.Account,
             Screen.DrawerScreen.Subscription,
             Screen.DrawerScreen.AddAccount
         )
-    }
-}
