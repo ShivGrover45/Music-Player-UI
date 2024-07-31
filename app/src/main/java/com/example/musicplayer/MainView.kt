@@ -48,6 +48,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.musicplayer.R
 import com.example.musicplayer.Screen
+import com.example.musicplayer.ui.theme.AccountDialog
 import com.example.musicplayer.ui.theme.MusicPlayerTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -61,6 +62,9 @@ fun MainView(){
     val controller:NavController = rememberNavController()
     val navBackStackEntry by controller.currentBackStackEntryAsState()
     val currentRoute=navBackStackEntry?.destination?.route
+    val dialogOpen= remember {
+        mutableStateOf(false)
+    }
     val currentScreen= remember {
         viewModel.currentScreen.value
     }
@@ -99,6 +103,7 @@ fun MainView(){
                        }
                        if(item.dRoute=="add"){
                            //Open add account dialog box
+                           dialogOpen.value=true
                        }
                        else{
                            controller.navigate(item.dRoute)
@@ -109,7 +114,8 @@ fun MainView(){
            }
         }
     ) {
-        Text(text = "Shikha", Modifier.padding(it))
+        Text(text = "Shikha",Modifier.padding(it))
+        AccountDialog(dialogOpen = dialogOpen)
     }
 
 }
@@ -162,7 +168,7 @@ fun Navigation(navController: NavController,viewModel: MainViewModel,pd:PaddingV
 fun MainViewPreview(){
 
     MusicPlayerTheme {
-        DrawerItem(selected = false, item =Screen.DrawerScreen.Account) {}
+       MainView()
     }
 
 }
