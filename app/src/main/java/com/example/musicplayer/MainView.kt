@@ -1,21 +1,24 @@
+package com.example.musicplayer
+
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,49 +28,59 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.NavHostController
+import androidx.navigation.Navigation
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.musicplayer.R
 import com.example.musicplayer.Screen
 import com.example.musicplayer.Screen.DrawerScreen.AddAccount.screensInDrawer
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainView(){
 
-    val scope= rememberCoroutineScope()
-    val scaffoldState= rememberScaffoldState()
-    val controller = rememberNavController()
+    val scope :CoroutineScope= rememberCoroutineScope()
+    val scaffoldState:ScaffoldState = rememberScaffoldState()
+    val controller:NavController = rememberNavController()
     val navBackStackEntry by controller.currentBackStackEntryAsState()
     val currentRoute=navBackStackEntry?.destination?.route
+
+    val viewModel:MainViewModel= viewModel()
+    val currentScreen= remember {
+        viewModel.currentScreen.value
+    }
     val title= remember {
-        mutableStateOf("")
+        mutableStateOf(currentScreen.title)
     }
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(text = "Home", color = Color.White)},
-                elevation = 3.dp,
-                navigationIcon = {
-                    IconButton(onClick = { /*TODO*/
-                    //opening the drawer menu
-
-                        scope.launch {
-                            scaffoldState.drawerState.open()
-                        }
-
-                    }) {
-                        Icon(imageVector = Icons.Default.AccountCircle, contentDescription ="Account"
-                        )
+            TopAppBar(title = {
+                Text(text = "Home")
+            },
+                navigationIcon = { IconButton(onClick = {
+                    // Open the drawer
+                    scope.launch {
+                        scaffoldState.drawerState.open()
                     }
-                }
-                , contentColor = Color.White,
-                backgroundColor = colorResource(id = R.color.top_bar_color),
-                modifier = Modifier.height(96.dp)
-                )
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Menu"
+                    )
+                }}
+            )
+
         },
         scaffoldState = scaffoldState
         , drawerContent = {
@@ -92,9 +105,7 @@ fun MainView(){
            }
         }
     ) {
-        Text(text = "Shikha", modifier = Modifier
-            .fillMaxWidth()
-            .padding(it))
+        Navigation(navController = controller, viewModel = viewModel, pd =it )
     }
 
 }
@@ -120,15 +131,25 @@ fun DrawerItem(
             Modifier.padding(top=4.dp, end = 8.dp)
             )
 
-        Text(text = item.dTitle, style = MaterialTheme.typography.h5)
+        Text(text = item.dTitle,
+            style = MaterialTheme.typography.h5)
 
     }
-
-
 }
 
 @Composable
-fun Navigation()
-{
+fun Navigation(navController: NavController,viewModel: MainViewModel,pd:PaddingValues){
+
+    NavHost(navController = navController as NavHostController,
+        startDestination =Screen.DrawerScreen.Account.route ,
+        modifier = Modifier.padding(pd)
+        ) {
+        composable(Screen.DrawerScreen.Account.route){
+            MainView()
+        }
+        composable(Screen.DrawerScreen.Subscription.route){
+
+        }
+    }
 
 }
