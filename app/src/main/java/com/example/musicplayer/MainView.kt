@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.musicplayer.R
 import com.example.musicplayer.Screen
 import com.example.musicplayer.ui.theme.AccountDialog
+import com.example.musicplayer.ui.theme.AccountView
 import com.example.musicplayer.ui.theme.MusicPlayerTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -114,7 +115,7 @@ fun MainView(){
            }
         }
     ) {
-        Text(text = "Shikha",Modifier.padding(it))
+        Navigation(navController= controller, viewModel =viewModel , pd =it )
         AccountDialog(dialogOpen = dialogOpen)
     }
 
@@ -155,7 +156,7 @@ fun Navigation(navController: NavController,viewModel: MainViewModel,pd:PaddingV
         modifier = Modifier.padding(pd)
         ) {
         composable(Screen.DrawerScreen.Account.route){
-            MainView()
+            AccountView()
         }
         composable(Screen.DrawerScreen.Subscription.route){
 
