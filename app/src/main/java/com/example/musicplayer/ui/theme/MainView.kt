@@ -1,4 +1,4 @@
-package com.example.musicplayer
+package com.example.musicplayer.ui.theme
 
 
 import androidx.compose.foundation.background
@@ -6,24 +6,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalDrawer
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Surface
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,90 +33,89 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
-import androidx.navigation.Navigation
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.musicplayer.MainViewModel
 import com.example.musicplayer.R
 import com.example.musicplayer.Screen
-import com.example.musicplayer.ui.theme.AccountDialog
-import com.example.musicplayer.ui.theme.AccountView
-import com.example.musicplayer.ui.theme.MusicPlayerTheme
+import com.example.musicplayer.screensInDrawer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainView(){
-    val scaffoldState:ScaffoldState = rememberScaffoldState()
-    val scope :CoroutineScope= rememberCoroutineScope()
-    val viewModel:MainViewModel= viewModel()
-    val controller:NavController = rememberNavController()
-    val navBackStackEntry by controller.currentBackStackEntryAsState()
-    val currentRoute=navBackStackEntry?.destination?.route
-    val dialogOpen= remember {
-        mutableStateOf(false)
-    }
-    val currentScreen= remember {
-        viewModel.currentScreen.value
-    }
-    val title= remember {
-        mutableStateOf(currentScreen.title)
-    }
-    Scaffold(
-        topBar = {
-            TopAppBar(title = {
-                Text(text = title.value)
-            },
-                navigationIcon = { IconButton(onClick = {
-                    // Open the drawer
-                    scope.launch {
-                        scaffoldState.drawerState.open()
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Menu"
-                    )
-                }}
-                , colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(id =R.color.top_bar_color ))
-            )
-
-        },
-        scaffoldState = scaffoldState,
-        drawerContent = {
-           LazyColumn(Modifier.padding(16.dp)) {
-               items(screensInDrawer){
-                   item ->
-                   DrawerItem(selected = currentRoute==item.dRoute, item =item ) {
-                       scope.launch {
-                           scaffoldState.drawerState.close()
-                       }
-                       if(item.dRoute=="add"){
-                           //Open add account dialog box
-                           dialogOpen.value=true
-                       }
-                       else{
-                           controller.navigate(item.dRoute)
-                           title.value=item.dTitle
-                       }
-                   }
-               }
-           }
+    Surface(modifier = Modifier.background(MaterialTheme.colors.onBackground)) {
+        val scaffoldState:ScaffoldState = rememberScaffoldState()
+        val scope :CoroutineScope= rememberCoroutineScope()
+        val viewModel: MainViewModel = viewModel()
+        val controller:NavController = rememberNavController()
+        val navBackStackEntry by controller.currentBackStackEntryAsState()
+        val currentRoute=navBackStackEntry?.destination?.route
+        val dialogOpen= remember {
+            mutableStateOf(false)
         }
-    ) {
-        Navigation(navController= controller, viewModel =viewModel , pd =it )
-        AccountDialog(dialogOpen = dialogOpen)
+        val currentScreen= remember {
+            viewModel.currentScreen.value
+        }
+        val title= remember {
+            mutableStateOf(currentScreen.title)
+        }
+        Scaffold(
+            topBar = {
+                TopAppBar(title = {
+                    Text(text = title.value)
+                },
+                    navigationIcon = { IconButton(onClick = {
+                        // Open the drawer
+                        scope.launch {
+                            scaffoldState.drawerState.open()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Menu"
+                        )
+                    }}
+                    , colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = colorResource(id =R.color.top_bar_color ))
+                )
+
+            },
+            scaffoldState = scaffoldState,
+            drawerContent = {
+                LazyColumn(Modifier.padding(16.dp)) {
+                    items(screensInDrawer){
+                            item ->
+                        DrawerItem(selected = currentRoute==item.dRoute, item =item ) {
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
+                            if(item.dRoute=="add"){
+                                //Open add account dialog box
+                                dialogOpen.value=true
+                            }
+                            else{
+                                controller.navigate(item.dRoute)
+                                title.value=item.dTitle
+                            }
+                        }
+                    }
+                }
+            }
+        ) {
+            Navigation(navController= controller, viewModel =viewModel , pd =it )
+            AccountDialog(dialogOpen = dialogOpen)
+        }
+
+    }
     }
 
-}
 
 
 @Composable
@@ -149,7 +145,7 @@ fun DrawerItem(
 }
 
 @Composable
-fun Navigation(navController: NavController,viewModel: MainViewModel,pd:PaddingValues){
+fun Navigation(navController: NavController, viewModel: MainViewModel, pd:PaddingValues){
 
     NavHost(navController = navController as NavHostController,
         startDestination =Screen.DrawerScreen.Account.route ,
@@ -159,17 +155,8 @@ fun Navigation(navController: NavController,viewModel: MainViewModel,pd:PaddingV
             AccountView()
         }
         composable(Screen.DrawerScreen.Subscription.route){
-
+            SubscriptionView()
         }
-    }
-
-}
-@Preview
-@Composable
-fun MainViewPreview(){
-
-    MusicPlayerTheme {
-       MainView()
     }
 
 }
