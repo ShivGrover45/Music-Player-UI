@@ -3,12 +3,21 @@ package com.example.musicplayer.ui.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.BottomAppBar
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -17,6 +26,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -27,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -43,6 +54,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.musicplayer.MainViewModel
 import com.example.musicplayer.R
 import com.example.musicplayer.Screen
+import com.example.musicplayer.screensInBottom
 import com.example.musicplayer.screensInDrawer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -66,7 +78,29 @@ fun MainView(){
         val title= remember {
             mutableStateOf(currentScreen.title)
         }
+        val bottomBar:@Composable () -> Unit={
+            if(currentScreen is Screen.DrawerScreen || currentScreen==Screen.BottomScreen.Home){
+               BottomNavigation(
+                   modifier = Modifier.wrapContentSize(),
+                   backgroundColor = colorResource(id = R.color.top_bar_color)
+               ) {
+                   screensInBottom.forEach{
+                       item->BottomNavigationItem(
+                       selected = currentRoute==item.bRoute,
+                       onClick = {controller.navigate(item.bRoute)},
+                       icon = { Icon(painter = painterResource(id = item.icons),
+                           contentDescription =item.bTitle )}
+                       , label = { Text(text = item.bTitle)}
+                           , selectedContentColor = Color.White,
+                           unselectedContentColor = Color.Black
+                           )
+                   }
+               }
+            }
+    }
+
         Scaffold(
+            bottomBar = bottomBar,
             topBar = {
                 TopAppBar(title = {
                     Text(text = title.value)
@@ -151,6 +185,15 @@ fun Navigation(navController: NavController, viewModel: MainViewModel, pd:Paddin
         startDestination =Screen.DrawerScreen.Account.route ,
         modifier = Modifier.padding(pd)
         ) {
+
+        composable(Screen.BottomScreen.Home.bRoute){
+            MainView()
+        }
+
+        composable(Screen.BottomScreen.Browse.bRoute){
+            // TODO Add Browse Screen
+        }
+
         composable(Screen.DrawerScreen.Account.route){
             AccountView()
         }
