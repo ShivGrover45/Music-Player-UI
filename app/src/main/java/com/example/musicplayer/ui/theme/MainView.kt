@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -44,6 +45,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -81,7 +83,9 @@ fun MainView(){
         val bottomBar:@Composable () -> Unit={
             if(currentScreen is Screen.DrawerScreen || currentScreen==Screen.BottomScreen.Home){
                BottomNavigation(
-                   modifier = Modifier.wrapContentSize(),
+                   modifier = Modifier
+                       .wrapContentSize()
+                       .heightIn(min = 94.dp),
                    backgroundColor = colorResource(id = R.color.top_bar_color)
                ) {
                    screensInBottom.forEach{
@@ -187,11 +191,16 @@ fun Navigation(navController: NavController, viewModel: MainViewModel, pd:Paddin
         ) {
 
         composable(Screen.BottomScreen.Home.bRoute){
-            MainView()
+            HomeView()
         }
 
         composable(Screen.BottomScreen.Browse.bRoute){
             // TODO Add Browse Screen
+            BrowseScreen()
+        }
+
+        composable(Screen.BottomScreen.Library.bRoute){
+            //TODO Add Library Screen
         }
 
         composable(Screen.DrawerScreen.Account.route){
