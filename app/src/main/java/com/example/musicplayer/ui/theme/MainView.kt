@@ -1,6 +1,7 @@
 package com.example.musicplayer.ui.theme
 
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -89,14 +90,22 @@ fun MainView(){
                    backgroundColor = colorResource(id = R.color.top_bar_color)
                ) {
                    screensInBottom.forEach{
-                       item->BottomNavigationItem(
+                       item->
+                       val isSelected=currentRoute==item.bRoute
+
+                       Log.d("Navigation","Items:${item.bTitle},Current Route:${item.bRoute} Selected:$isSelected")
+
+                       BottomNavigationItem(
                        selected = currentRoute==item.bRoute,
-                       onClick = {controller.navigate(item.bRoute)},
-                       icon = { Icon(painter = painterResource(id = item.icons),
-                           contentDescription =item.bTitle )}
+                       onClick = {controller.navigate(item.bRoute) },
+                       icon = {
+                           val tint=if (isSelected) Color.Black else Color.White
+                           Icon(painter = painterResource(id = item.icons),
+                           contentDescription =item.bTitle ,
+                               tint=tint)}
                        , label = { Text(text = item.bTitle)}
-                           , selectedContentColor = Color.White,
-                           unselectedContentColor = Color.Black
+                           , selectedContentColor = Color.Black,
+                           unselectedContentColor = Color.White
                            )
                    }
                }
@@ -201,6 +210,7 @@ fun Navigation(navController: NavController, viewModel: MainViewModel, pd:Paddin
 
         composable(Screen.BottomScreen.Library.bRoute){
             //TODO Add Library Screen
+            LibraryScreen()
         }
 
         composable(Screen.DrawerScreen.Account.route){
