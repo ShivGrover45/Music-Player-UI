@@ -1,3 +1,9 @@
 package com.example.musicplayer
 
-data class Dummy()
+import androidx.annotation.DrawableRes
+
+data class Lib(@DrawableRes val icons:Int,val name:String)
+
+val libraries= listOf<Lib>(
+
+)
